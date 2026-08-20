@@ -37,13 +37,31 @@ python3 -m http.server 8000
 
 ## Deploying
 
-Any static host works. Two easy options:
+The site is hosted on cPanel shared hosting and deployed over FTPS.
 
-**GitHub Pages** — Settings → Pages → Source: `main` branch, `/` root.
-Then add `namanuttarakhand.com` as the custom domain and point DNS at GitHub.
+Credentials are **not** stored in this repo. Create a netrc file outside the
+repo, `chmod 600` it, and point `deploy.sh` at it:
 
-**Vercel** — `vercel --prod` from this directory, then add the domain in the
-project settings.
+```
+machine ftp.namanuttarakhand.com
+login deploy@namanuttarakhand.com
+password YOUR_PASSWORD
+```
+
+```bash
+NETRC=~/.namanuk-netrc ./deploy.sh
+```
+
+The FTP account is chrooted to the document root
+(`/home/karmhqjb/namanuttarakhand.com`), so paths in the script are relative
+to the site root. The script uploads every file, then checks each URL over
+HTTPS and prints the status codes.
+
+Note: the host's TLS certificate is issued for its own hostname, not this
+domain, so `deploy.sh` passes `-k`. The session is still encrypted; only
+hostname verification is skipped.
+
+No database is used — this is a fully static site.
 
 ## Meta verification checklist
 
